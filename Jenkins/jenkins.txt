@@ -1,0 +1,24 @@
+To create a job on Jenkins
+
+-> docker pull jenkins/Jenkins
+-> docker run -p 8080:8080 --name MyJenkins -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/Jenkins
+
+After running Jenkins, an Admin password will be generated...Copy that
+
+If the Jenkins container is already present, then you can get the admin password by running this 
+-> docker exec -it MyJenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
+Open localhost:8080/login and enter Administrator password 
+
+-> Click New Item 
+-> Enter the job name
+-> Select a Freestyle project
+-> Click OK
+-> then go to configure the created job
+-> add Build steps and select Execute shell
+-> write 
+cd /
+ls
+-> click save
+-> docker volume inspect jenkins_home
+->
