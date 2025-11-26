@@ -1,0 +1,51 @@
+Kubernetes exp1
+
+-> mkdir hello-world
+-> cd hello-world
+-> npm init -y
+-> npm install express
+-> code app.js
+-> 
+
+const express = require("express");
+const app = express();
+const port = 3000;
+
+app.get("/",(req,res)=>{
+	res.send("Hello World from K8s!");
+});
+
+app.listen(port, ()=>{
+	console.log(`App listening at 	http://localhost:${port}`);	
+});
+
+-> code Dockerfile
+
+FROM node:21
+WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node","app.js"]
+
+-> docker build -t hello-world-nodeapp .
+-> docker run -d -p 3000:3000 --name hello-world-nodeapp-c hello-world-nodeapp 
+->write localhost:3000
+Now to push the image to dockerhub
+-> docker login
+-> docker tag hello-world-nodeapp barkha2911/hello-world-nodeapp
+-> docker push barkha2911/hello-world-nodeapp
+Deploy to Kubernetes
+-> docker context use default
+-> minikube start
+Create a deployment
+-> kubectl create deployment hello-world-depl --image=barkha2911/hello-world-nodeapp
+-> kubectl get all
+-> kubectl get pods
+-> kubectl logs <pod-name>
+->kubectl get events
+create a service
+-> kubectl expose deployment hello-world-depl --type=NodePort --name=hello-world-svc --port=3000
+get service url
+->minikube service --url <service-name>

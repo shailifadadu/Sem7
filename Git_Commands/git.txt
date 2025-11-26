@@ -1,0 +1,29 @@
+Git and GitHub
+
+-> git config --global user.name "barkha lahori"
+-> git config --global user.email "barkhalahori2911@gmail.com"
+
+steps :
+ek folder bana 'food-guests' 
+uske andar do aur folders main and test
+-> git init
+-> open with vs
+aur ek Readme.md file bhi add kr
+then write something in the readme file 
+-> git add Readme.md (gitbash ka path must be upto food-guests)
+-> git commit -m "Initial commit"
+-> git log (OR) git log --oneline
+ab create a new branch and switch to it
+->git checkout -b feature/jeera-rice
+create a folder inside main name jeera-rice
+ab jeera-rice aur test folders k andar add .txt files
+dono .txt files me kuch content add kr
+-> git add .
+-> git commit -m ""
+now switch back to main 
+-> git checkout main
+-> git merge feature/jeera-rice
+Now add something in one of the .txt files and commit in the main branch
+Same way go to the other branch and make changes in the same line of the same file ... and then commit in this feature branch too
+and now switch back to main and try to merge
+You will get a merge conflict
