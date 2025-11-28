@@ -1,0 +1,67 @@
+# -------------------------------
+# 1. Import required libraries
+# -------------------------------
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# -------------------------------
+# 2. Load Dataset
+# -------------------------------
+data = pd.read_csv("dataset.csv")   # your CSV file
+
+# -------------------------------
+# 3. Handle missing values (simple method)
+# -------------------------------
+data = data.dropna()   # remove rows with missing values
+# OR you can fill missing values:
+# data = data.fillna(method='ffill')
+
+# -------------------------------
+# 4. Convert string/categorical columns to numerical
+# -------------------------------
+label_enc = LabelEncoder()
+
+for col in data.columns:
+    if data[col].dtype == 'object':   # if column is string/categorical
+        data[col] = label_enc.fit_transform(data[col])
+
+# -------------------------------
+# 5. Split features and target
+# -------------------------------
+X = data.drop("target", axis=1)   # replace 'target' with your column name
+y = data["target"]
+
+# -------------------------------
+# 6. Train-test split
+# -------------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# -------------------------------
+# 7. Feature Scaling (important for LR)
+# -------------------------------
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# -------------------------------
+# 8. Build and train Logistic Regression model
+# -------------------------------
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# -------------------------------
+# 9. Predictions
+# -------------------------------
+y_pred = model.predict(X_test)
+
+# -------------------------------
+# 10. Evaluation
+# -------------------------------
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+print("\nConfusion Matrix:\n", confusion_matrix(y_test, y_pred))
