@@ -1,0 +1,75 @@
+# -------------------------------------------------------
+# MINIMAL CNN FOR CUSTOM IMAGE DATASET
+# -------------------------------------------------------
+
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+# -------------------------------------------------------
+# 1) Load Image Dataset
+# -------------------------------------------------------
+
+img_size = (128, 128)
+batch_size = 32
+
+train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    "dataset/train",
+    image_size=img_size,
+    batch_size=batch_size
+)
+
+test_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    "dataset/test",
+    image_size=img_size,
+    batch_size=batch_size
+)
+
+class_names = train_ds.class_names
+
+# -------------------------------------------------------
+# 2) Build CNN Model
+# -------------------------------------------------------
+
+model = models.Sequential([
+    layers.Rescaling(1./255, input_shape=img_size + (3,)),
+
+    layers.Conv2D(32, (3,3), activation='relu'),
+    layers.MaxPooling2D(),
+
+    layers.Conv2D(64, (3,3), activation='relu'),
+    layers.MaxPooling2D(),
+
+    layers.Conv2D(128, (3,3), activation='relu'),
+    layers.MaxPooling2D(),
+
+    layers.Flatten(),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(len(class_names), activation='softmax')
+])
+
+# -------------------------------------------------------
+# 3) Compile Model
+# -------------------------------------------------------
+
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# -------------------------------------------------------
+# 4) Train Model
+# -------------------------------------------------------
+
+model.fit(
+    train_ds,
+    validation_data=test_ds,
+    epochs=10
+)
+
+# -------------------------------------------------------
+# 5) Evaluate
+# -------------------------------------------------------
+
+loss, acc = model.evaluate(test_ds)
+print("Test Accuracy:", acc)

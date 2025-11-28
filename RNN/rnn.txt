@@ -1,0 +1,63 @@
+import pandas as pd
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Embedding, SimpleRNN, Dense
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+# -----------------------------
+# Load CSV file
+# -----------------------------
+data = pd.read_csv("spam.csv")   # change filename if needed
+
+# Convert labels: ham → 0, spam → 1
+data['label'] = data['label'].map({'ham': 0, 'spam': 1})
+
+X = data['message'].astype(str)
+y = data['label'].values
+
+# -----------------------------
+# Text Tokenization + Sequencing
+# -----------------------------
+vocab_size = 10000
+maxlen = 150
+
+tokenizer = Tokenizer(num_words=vocab_size, oov_token="<OOV>")
+tokenizer.fit_on_texts(X)
+
+X_sequences = tokenizer.texts_to_sequences(X)
+
+# Pad/truncate sequences
+X_padded = pad_sequences(X_sequences, maxlen=maxlen, padding='post', truncating='post')
+
+# -----------------------------
+# Train-test split
+# -----------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X_padded, y, test_size=0.2, random_state=42
+)
+
+# -----------------------------
+# Build RNN Model
+# -----------------------------
+model = Sequential()
+model.add(Embedding(input_dim=vocab_size, output_dim=32, input_length=maxlen))
+model.add(SimpleRNN(32))       # reads review word-by-word
+model.add(Dense(1, activation='sigmoid'))  # binary classifier
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+# -----------------------------
+# Train
+# -----------------------------
+model.fit(X_train, y_train, epochs=5, batch_size=64, validation_split=0.2)
+
+# -----------------------------
+# Evaluate
+# -----------------------------
+loss, acc = model.evaluate(X_test, y_test)
+print("Test Accuracy:", acc)
+
+# Model Summary
+model.summary()

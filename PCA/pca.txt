@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# --------------------------------------
+# Load CSV file instead of inbuilt dataset
+# --------------------------------------
+df = pd.read_csv("your_file.csv")   # <-- change filename here
+
+# If label column exists (like 'target'), remove it:
+# df = df.drop('label_column_name', axis=1)
+
+# --------------------------------------
+# Standardize the data
+# --------------------------------------
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(df)
+
+# --------------------------------------
+# PCA with 2 Components
+# --------------------------------------
+pca = PCA(n_components=2)
+principal_components = pca.fit_transform(scaled_data)
+
+# --------------------------------------
+# Convert to DataFrame
+# --------------------------------------
+principalDf = pd.DataFrame(data=principal_components,
+                           columns=['principal component 1', 'principal component 2'])
+
+print("\nPCA First Rows:\n", principalDf.head())
+print("\nExplained Variance Ratio:\n", pca.explained_variance_ratio_)
